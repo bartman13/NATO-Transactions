@@ -16,10 +16,10 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<UserDto>> GetAllAsync()
+    public async Task<IReadOnlyCollection<UserDto>> GetAllAsync()
     {
         var users = await _userRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<UserDto>>(users);
+        return _mapper.Map<IReadOnlyCollection<UserDto>>(users);
     }
 
     public async Task<UserDto?> GetByIdAsync(Guid id)

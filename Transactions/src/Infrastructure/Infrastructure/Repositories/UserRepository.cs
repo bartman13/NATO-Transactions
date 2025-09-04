@@ -14,7 +14,7 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync()
+    public async Task<IReadOnlyCollection<User>> GetAllAsync()
     {
         return await _context.Users.ToListAsync();
     }

@@ -20,6 +20,9 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
 
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<ITransactionService, TransactionService>();
+
         return services;
     }
 }
