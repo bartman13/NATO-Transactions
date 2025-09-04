@@ -1,8 +1,8 @@
 ﻿using Domain.Enums;
 
-namespace Domain.Entities;
+namespace Application.DTOs;
 
-public class Transaction : BaseEntity
+public class CreateTransactionDto
 {
     public Guid UserId { get; set; }
     public decimal Amount { get; set; }
