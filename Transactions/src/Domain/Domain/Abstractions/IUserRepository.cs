@@ -1,5 +1,13 @@
-﻿namespace Domain.Abstractions;
+﻿using Domain.Entities;
 
-internal interface IUserRepository
+namespace Domain.Abstractions;
+
+public interface IUserRepository
 {
+    Task<IEnumerable<User>> GetAllAsync();
+    Task<User?> GetByIdAsync(Guid id);
+    Task AddAsync(User user);
+    Task UpdateAsync(User user);
+    Task DeleteAsync(User user);
+    Task<bool> ExistsAsync(Guid id);
 }
