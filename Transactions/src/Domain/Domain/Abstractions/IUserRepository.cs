@@ -4,7 +4,7 @@ namespace Domain.Abstractions;
 
 public interface IUserRepository
 {
-    Task<IEnumerable<User>> GetAllAsync();
+    Task<IReadOnlyCollection<User>> GetAllAsync();
     Task<User?> GetByIdAsync(Guid id);
     Task AddAsync(User user);
     Task UpdateAsync(User user);

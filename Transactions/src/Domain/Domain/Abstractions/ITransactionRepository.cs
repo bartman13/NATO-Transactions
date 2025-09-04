@@ -1,5 +1,9 @@
-﻿namespace Domain.Abstractions;
+﻿using Domain.Entities;
 
-internal interface ITransactionRepository
+namespace Domain.Abstractions;
+
+public interface ITransactionRepository
 {
+    Task<Transaction> AddAsync(Transaction transaction);
+    Task<IReadOnlyCollection<Transaction>> GetAllAsync();
 }

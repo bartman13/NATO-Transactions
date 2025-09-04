@@ -1,3 +1,5 @@
+using Application.DTOs;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Transactions.Controllers;
@@ -6,16 +8,24 @@ namespace Transactions.Controllers;
 [Route("[controller]")]
 public class TransactionsController : ControllerBase
 {
-    private readonly ILogger<TransactionsController> _logger;
+    private readonly ITransactionService _service;
 
-    public TransactionsController(ILogger<TransactionsController> logger)
+    public TransactionsController(ITransactionService service)
     {
-        _logger = logger;
+        _service = service;
     }
 
-    [HttpGet(Name = "Transaction")]
-    public string Get()
+    [HttpPost]
+    public async Task<IActionResult> AddTransaction([FromBody] CreateTransactionDto dto)
     {
-        return "Ok";
+        var result = await _service.AddTransactionAsync(dto);
+        return CreatedAtAction(nameof(GetTransactions), new { id = result.Id }, result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetTransactions()
+    {
+        var result = await _service.GetAllTransactionsAsync();
+        return Ok(result);
     }
 }
