@@ -2,6 +2,7 @@
 using AutoMapper;
 using Domain.Abstractions;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Services
 {
@@ -48,6 +49,17 @@ namespace Application.Services
                     UserId = g.Key, 
                     TotalAmount = g.Sum(t => t.Amount) })
                 .ToList();
+        }
+
+        public async Task<IReadOnlyCollection<TransactionTypeSummaryDto>> GetTotalAmountPerTransactionType()
+        {
+            var transactions = await _transactionRepository.GetAllAsync();
+
+            return Enum.GetValues<TransactionType>().Select(x => new TransactionTypeSummaryDto
+            {
+                TransactionType = x,
+                TotalAmount = transactions.Where(y => y.TransactionType == x).Sum(t => t.Amount)
+            }).ToList();
         }
     }
 }
