@@ -18,19 +18,14 @@ public class SummariesController : ControllerBase
     [HttpGet("total-per-user")]
     public async Task<IActionResult> GetTotalAmountPerUser()
     {
-        // Fetch all transactions in memory
-        var transactions = await _transactionService.GetAllTransactionsAsync();
+        var summary = await _transactionService.GetTotalAmountPerUserAsync();
+        return Ok(summary);
+    }
 
-        // Group by user and sum amounts efficiently
-        var summary = transactions
-            .GroupBy(t => t.UserId)
-            .Select(g => new UserTransactionSummaryDto
-            {
-                UserId = g.Key,
-                TotalAmount = g.Sum(t => t.Amount)
-            })
-            .ToList();
-
+    [HttpGet("total-per-transaction-type")]
+    public async Task<IActionResult> GetTotalAmountPerTransactionType()
+    {
+        var summary = await _transactionService.GetTotalAmountPerTransactionType();
         return Ok(summary);
     }
 }
