@@ -1,6 +1,7 @@
 using Application.Mapping;
 using Infrastructure;
 using System.Text.Json.Serialization;
+using Transactions.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
 
