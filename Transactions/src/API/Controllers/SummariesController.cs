@@ -28,4 +28,11 @@ public class SummariesController : ControllerBase
         var summary = await _transactionService.GetTotalAmountPerTransactionType();
         return Ok(summary);
     }
+
+    [HttpGet("high-volume")]
+    public async Task<IActionResult> GetHighVolumeTransactions([FromQuery] decimal threshold)
+    {
+        var result = await _transactionService.GetHighVolumeTransactions(threshold);
+        return Ok(result);
+    }
 }
