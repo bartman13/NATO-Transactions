@@ -27,13 +27,16 @@ public class TransactionTypeSummaryIntegrationTests : IClassFixture<TransactionT
         var result = await service.GetTotalAmountPerUserAsync();
 
         // Assert
-        result.Should().HaveCount(2);
+        result.Should().HaveCount(3);
 
         var user1Summary = result.First(x => x.UserId == _fixture.User1);
         user1Summary.TotalAmount.Should().Be(400);
 
         var user2Summary = result.First(x => x.UserId == _fixture.User2);
         user2Summary.TotalAmount.Should().Be(200);
+
+        var user3Summary = result.First(x => x.UserId != _fixture.User2 && x.UserId != _fixture.User1);
+        user3Summary.TotalAmount.Should().Be(0);
     }
 
     [Fact]
