@@ -1,12 +1,12 @@
-﻿using Moq;
-using FluentAssertions;
+﻿using Application.Mapping;
 using Application.Services;
-using Domain.Abstractions;
 using AutoMapper;
+using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Enums;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Application.Mapping;
+using Moq;
 
 namespace UnitTests;
 
@@ -26,6 +26,13 @@ public class TransactionServiceTests
             new Transaction { Id = Guid.NewGuid(), UserId = userId2, Amount = 200, TransactionType = TransactionType.Debit, CreatedAt = DateTime.UtcNow }
     };
 
+    private readonly List<User> users = new() 
+    {
+           new User { Id = userId1, FirstName = "Alice", LastName = "Smith", Email = "alice@example.com" },
+           new User { Id = userId2, FirstName = "Bob", LastName = "Johnson", Email = "bob@example.com" },
+           new User { Id = Guid.NewGuid(), FirstName = "Charlie", LastName = "Brown", Email = "charlie@example.com" }
+    };
+
     public TransactionServiceTests()
     {
         var mockLogger = new Mock<ILogger>();
@@ -35,7 +42,7 @@ public class TransactionServiceTests
                 It.IsAny<EventId>(),
                 It.IsAny<object>(),
                 It.IsAny<Exception>(),
-                It.IsAny<Func<object, Exception, string>>()));
+                It.IsAny<Func<object, Exception?, string>>()));
 
         var mockLoggerFactory = new Mock<ILoggerFactory>();
         mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(() => mockLogger.Object);
@@ -56,14 +63,16 @@ public class TransactionServiceTests
     {
         // Arrange
         _transactionRepositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(transactions);
+        _userRepositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(users);
 
         // Act
         var result = await _service.GetTotalAmountPerUserAsync();
 
         // Assert
-        result.Should().HaveCount(2);
+        result.Should().HaveCount(3);
         result.First(r => r.UserId == userId1).TotalAmount.Should().Be(150);
         result.First(r => r.UserId == userId2).TotalAmount.Should().Be(200);
+        result.First(r => r.UserId != userId2 && r.UserId != userId1).TotalAmount.Should().Be(0);
     }
 
     [Fact]
