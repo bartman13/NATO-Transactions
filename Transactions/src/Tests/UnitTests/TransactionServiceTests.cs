@@ -108,4 +108,39 @@ public class TransactionServiceTests
         var creditSummary = result.First(x => x.TransactionType == TransactionType.Credit);
         creditSummary.TotalAmount.Should().Be(0);
     }
+
+    [Fact]
+    public async Task GetHighVolumeTransactions_ShouldReturnOnlyTransactionsAboveThreshold()
+    {
+        // Arrange
+        _transactionRepositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(transactions);
+
+        decimal threshold = 50;
+
+        // Act
+        var result = await _service.GetHighVolumeTransactions(threshold);
+
+        // Assert
+        result.Should().HaveCount(2);
+        result.Should().ContainSingle(t => t.Amount == 100);
+        result.Should().ContainSingle(t => t.Amount == 200);
+        result.All(t => t.Amount > threshold).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetHighVolumeTransactions_ShouldReturnEmptyIfNoTransactionAtaAll()
+    {
+        // Arrange
+        var transactions = new List<Transaction>();
+
+        _transactionRepositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(transactions);
+
+        decimal threshold = 100;
+
+        // Act
+        var result = await _service.GetHighVolumeTransactions(threshold);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
 }
