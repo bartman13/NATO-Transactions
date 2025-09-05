@@ -41,26 +41,34 @@ namespace Application.Services
 
         public async Task<IReadOnlyCollection<UserTransactionSummaryDto>> GetTotalAmountPerUserAsync()
         {
+            var users = await _userRepository.GetAllAsync();
             var transactions = await _transactionRepository.GetAllAsync();
 
-            return transactions
-                .GroupBy(t => t.UserId).
-                Select(g => new UserTransactionSummaryDto
-                {
-                    UserId = g.Key,
-                    TotalAmount = g.Sum(t => t.Amount)
-                })
-                .ToList();
+            // transaction by user takes O(n) efficiency
+            var transactionsByUser = transactions
+                .GroupBy(x => x.UserId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+
+            return users.Select(x => new UserTransactionSummaryDto
+            {
+                UserId = x.Id,
+                TotalAmount = transactionsByUser.GetValueOrDefault(x.Id)?.Sum(y => y.Amount) ?? 0
+            }).ToList();
         }
 
         public async Task<IReadOnlyCollection<TransactionTypeSummaryDto>> GetTotalAmountPerTransactionType()
         {
             var transactions = await _transactionRepository.GetAllAsync();
 
+            var transactionsByTransactionType = transactions
+               .GroupBy(x => x.TransactionType)
+               .ToDictionary(g => g.Key, g => g.ToList());
+
             return Enum.GetValues<TransactionType>().Select(x => new TransactionTypeSummaryDto
             {
                 TransactionType = x,
-                TotalAmount = transactions.Where(y => y.TransactionType == x).Sum(t => t.Amount)
+                TotalAmount = transactionsByTransactionType.GetValueOrDefault(x)?.Sum(y => y.Amount) ?? 0
             }).ToList();
         }
 

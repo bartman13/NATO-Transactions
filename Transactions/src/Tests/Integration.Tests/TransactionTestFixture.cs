@@ -31,6 +31,13 @@ public class TransactionTestFixture : IDisposable
             new Transaction { Id = Guid.NewGuid(), UserId = User2, Amount = 200, TransactionType = TransactionType.Debit, CreatedAt = DateTime.UtcNow },
             new Transaction { Id = Guid.NewGuid(), UserId = User1, Amount = 300, TransactionType = TransactionType.Credit, CreatedAt = DateTime.UtcNow }
         });
+
+        DbContext.Users.AddRange(
+        [
+           new User { Id = User1, FirstName = "Alice", LastName = "Smith", Email = "alice@example.com" },
+           new User { Id = User2, FirstName = "Bob", LastName = "Johnson", Email = "bob@example.com" },
+           new User { Id = Guid.NewGuid(), FirstName = "Charlie", LastName = "Brown", Email = "charlie@example.com" }
+        ]);
         DbContext.SaveChanges();
 
         // Setup AutoMapper
